@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice App</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; background-color: #f0f2f5; color: #1c1e21;
+        }
+        .card {
+            background: white; padding: 2rem; border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
+            width: 90%; max-width: 400px;
+        }
+        #status { margin-bottom: 20px; font-weight: 500; color: #65676b; }
+        #recordBtn { 
+            padding: 15px 30px; font-size: 1.1rem; border: none; border-radius: 50px; 
+            background-color: #0084ff; color: white; cursor: pointer; 
+            transition: transform 0.2s, background 0.3s; width: 100%;
+        }
+        #recordBtn:active { transform: scale(0.95); }
+        #recordBtn:disabled { background-color: #bec3c9; cursor: not-allowed; }
+        #transcript { 
+            margin-top: 20px; padding: 10px; border-radius: 8px;
+            background: #f7f8fa; min-height: 50px; font-style: italic; 
+        }
+        .success-flash { color: #42b72a; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Voice Assistant</h2>
+        <div id="status">Tap the button to speak</div>
+        <button id="recordBtn">Start Speaking</button>
+        <div id="transcript">Your text will appear here...</div>
+    </div>
+
+    <script>
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            alert("Speech recognition is not supported in this browser. Please use Chrome on Android or Safari on iOS.");
+        } else {
+            const recognition = new SpeechRecognition();
+            const btn = document.getElementById('recordBtn');
+            const status = document.getElementById('status');
+            const transcriptDiv = document.getElementById('transcript');
+
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            btn.addEventListener('click', () => {
+                try {
+                    recognition.start();
+                    btn.disabled = true;
+                    status.innerText = "Listening...";
+                    transcriptDiv.innerText = "";
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+
+            recognition.onresult = (event) => {
+                const phrase = event.results[0][0].transcript;
+                transcriptDiv.innerText = `"${phrase}"`;
+                sendToServer(phrase);
+            };
+
+            recognition.onerror = (event) => {
+                status.innerText = "Error occurred: " + event.error;
+                btn.disabled = false;
+            };
+
+            recognition.onend = () => {
+                btn.disabled = false;
+            };
+
+            async function sendToServer(text) {
+                status.innerText = "Sending to server...";
+                try {
+                    // NOTE: This uses a relative path. 
+                    // It will hit http://localhost:3000/receive locally 
+                    // AND https://your-app.onrender.com/receive in the cloud.
+                    const response = await fetch('/receive', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phrase: text })
+                    });
+                    
+                    const data = await response.json();
+                    if (response.ok) {
+                        status.innerHTML = '<span class="success-flash">Sent Successfully!</span>';
+                    } else {
+                        status.innerText = "Server Error.";
+                    }
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    status.innerText = "Could not reach server.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

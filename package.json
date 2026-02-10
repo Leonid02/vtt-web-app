@@ -1,0 +1,25 @@
+{
+  "name": "vtt-web-app",
+  "version": "1.0.0",
+  "description": "A web application that recognizes speech on mobile and sends it to a Node.js server.",
+  "keywords": [
+    "VTT",
+    "mobile",
+    "web"
+  ],
+  "license": "ISC",
+  "author": "LY",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
