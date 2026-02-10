@@ -1,87 +1,57 @@
+/* General Reset */
 body { 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    height: 100vh; margin: 0; background-color: #f0f2f5; color: #1c1e21;
+    min-height: 100vh; margin: 0; background-color: #f0f2f5; color: #1c1e21;
 }
 
+/* Container Card */
 .card {
-    background: white; padding: 2rem; border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
+    background: white; padding: 2rem; border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); text-align: center;
     width: 90%; max-width: 400px;
 }
 
-#status { margin-bottom: 20px; font-weight: 500; color: #65676b; }
+h2 { margin-top: 0; color: #1c1e21; }
 
+#status { margin-bottom: 20px; font-size: 0.95rem; font-weight: 500; color: #65676b; height: 1.2rem; }
+
+/* Primary Button */
 #recordBtn { 
-    padding: 15px 30px; font-size: 1.1rem; border: none; border-radius: 50px; 
+    padding: 18px 30px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 50px; 
     background-color: #0084ff; color: white; cursor: pointer; 
-    transition: transform 0.2s, background 0.3s; width: 100%;
+    transition: transform 0.1s, background 0.3s; width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 132, 255, 0.3);
 }
 
-#recordBtn:active { transform: scale(0.95); }
+#recordBtn:active { transform: scale(0.96); background-color: #0073e6; }
+#recordBtn:disabled { background-color: #bec3c9; cursor: not-allowed; box-shadow: none; }
 
-#recordBtn:disabled { background-color: #bec3c9; cursor: not-allowed; }
-
+/* Transcription Box */
 #transcript { 
-    margin-top: 20px; padding: 10px; border-radius: 8px;
-    background: #f7f8fa; min-height: 50px; font-style: italic; 
+    margin-top: 25px; padding: 15px; border-radius: 12px;
+    background: #f7f8fa; min-height: 60px; font-style: italic; color: #4b4f56;
+    border: 1px dashed #cbd0d6;
 }
+
+.divider { margin: 25px 0; border: 0; border-top: 1px solid #e4e6eb; }
+
+/* Secondary Actions */
+.secondary-btn {
+    padding: 12px 20px; font-size: 0.9rem; border: none; border-radius: 50px; 
+    background-color: #4b4f56; color: white; cursor: pointer; width: 100%;
+    transition: background 0.3s, transform 0.1s;
+}
+
+.secondary-btn:active { transform: scale(0.98); }
+
+/* History Section */
+#historyContainer {
+    margin-top: 20px; text-align: left; font-size: 0.85rem; color: #65676b;
+    max-height: 150px; overflow-y: auto;
+}
+
+#historyList { margin-top: 8px; line-height: 1.6; font-family: 'Courier New', Courier, monospace; }
 
 .success-flash { color: #42b72a; font-weight: bold; }
-
-#downloadBtn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    border: none;
-    border-radius: 50px;
-    background-color: #4b4f56;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s;
-}
-
-#downloadBtn:hover {
-    background-color: #333;
-}
-
-.divider {
-    margin: 25px 0;
-    border: 0;
-    border-top: 1px solid #e4e6eb;
-}
-
-.secondary-btn {
-    padding: 12px 20px;
-    font-size: 0.9rem;
-    border: none;
-    border-radius: 50px;
-    background-color: #4b4f56;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.secondary-btn:hover {
-    background-color: #333;
-}
-
-.secondary-btn:active {
-    transform: scale(0.98);
-}
-
-#historyContainer {
-    margin-top: 20px;
-    text-align: left;
-    font-size: 0.85rem;
-    color: #65676b;
-    max-height: 150px;
-    overflow-y: auto; /* Adds a scrollbar if history gets long */
-}
-
-#historyList {
-    margin-top: 8px;
-    line-height: 1.4;
-    font-family: monospace;
-}
+.error-text { color: #d93025; font-weight: bold; }
