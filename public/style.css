@@ -3,21 +3,85 @@ body {
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
     height: 100vh; margin: 0; background-color: #f0f2f5; color: #1c1e21;
 }
+
 .card {
     background: white; padding: 2rem; border-radius: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
     width: 90%; max-width: 400px;
 }
+
 #status { margin-bottom: 20px; font-weight: 500; color: #65676b; }
+
 #recordBtn { 
     padding: 15px 30px; font-size: 1.1rem; border: none; border-radius: 50px; 
     background-color: #0084ff; color: white; cursor: pointer; 
     transition: transform 0.2s, background 0.3s; width: 100%;
 }
+
 #recordBtn:active { transform: scale(0.95); }
+
 #recordBtn:disabled { background-color: #bec3c9; cursor: not-allowed; }
+
 #transcript { 
     margin-top: 20px; padding: 10px; border-radius: 8px;
     background: #f7f8fa; min-height: 50px; font-style: italic; 
 }
+
 .success-flash { color: #42b72a; font-weight: bold; }
+
+#downloadBtn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 50px;
+    background-color: #4b4f56;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+}
+
+#downloadBtn:hover {
+    background-color: #333;
+}
+
+.divider {
+    margin: 25px 0;
+    border: 0;
+    border-top: 1px solid #e4e6eb;
+}
+
+.secondary-btn {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 50px;
+    background-color: #4b4f56;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.secondary-btn:hover {
+    background-color: #333;
+}
+
+.secondary-btn:active {
+    transform: scale(0.98);
+}
+
+#historyContainer {
+    margin-top: 20px;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #65676b;
+    max-height: 150px;
+    overflow-y: auto; /* Adds a scrollbar if history gets long */
+}
+
+#historyList {
+    margin-top: 8px;
+    line-height: 1.4;
+    font-family: monospace;
+}

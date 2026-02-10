@@ -1,3 +1,37 @@
+
+// At the top of your script
+let voiceHistory = [];
+
+const downloadBtn = document.getElementById('downloadBtn');
+const historyList = document.getElementById('historyList');
+
+// Inside the recognition.onresult function, after you call sendToServer(phrase):
+voiceHistory.push(`${new Date().toLocaleTimeString()}: ${phrase}`);
+updateHistoryUI();
+
+// Add these functions at the bottom of the file:
+function updateHistoryUI() {
+    historyList.innerHTML = "<strong>History:</strong><br>" + voiceHistory.slice(-3).join("<br>");
+}
+
+downloadBtn.addEventListener('click', () => {
+    if (voiceHistory.length === 0) {
+        alert("No history to download yet!");
+        return;
+    }
+    
+    const blob = new Blob([voiceHistory.join('\n')], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = `voice-history-${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+});
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
@@ -57,4 +91,10 @@ if (!SpeechRecognition) {
             status.innerText = "Could not reach server.";
         }
     }
+
+    function updateHistoryUI() {
+    // Show the last 5 entries in the UI
+    const displayList = voiceHistory.slice(-5).reverse(); 
+    document.getElementById('historyList').innerHTML = displayList.join("<br>");
+}
 }

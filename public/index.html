@@ -1,3 +1,11 @@
+To keep your code professional and clean, we’ll move all the "visual" code into your style.css file and keep the index.html strictly for the structure.
+
+Here are the updated files to incorporate the Download button and History list seamlessly.
+
+### 1. Updated public/index.html
+We removed the style="..." attributes and replaced them with classes that link to your CSS file.
+
+HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +19,19 @@
     <div class="card">
         <h2>Voice Assistant</h2>
         <div id="status">Tap the button to speak</div>
+        
         <button id="recordBtn">Start Speaking</button>
+        
         <div id="transcript">Your text will appear here...</div>
+
+        <hr class="divider">
+        
+        <button id="downloadBtn" class="secondary-btn">Download History</button>
+        
+        <div id="historyContainer">
+            <strong>Recent History:</strong>
+            <div id="historyList"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
