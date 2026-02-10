@@ -13,51 +13,43 @@ if (!SpeechRecognition) {
     let voiceHistory = [];
     const recognition = new SpeechRecognition();
 
+    // Configuration
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
 
-    // 1. Permission Check (Android/Chrome)
-    async function checkMicPermission() {
-        try {
-            const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
-            updateUIByPermission(permissionStatus.state);
-            permissionStatus.onchange = () => updateUIByPermission(permissionStatus.state);
-        } catch (e) {
-            console.log("Permissions API not supported (iOS).");
-        }
-    }
-
-    function updateUIByPermission(state) {
-        if (state === 'denied') {
-            status.innerHTML = '<span class="error-text">❌ Mic Access Blocked</span>';
-            btn.style.opacity = "0.5";
-        }
-    }
-
-    // 2. Vibration Helper
+    // 1. Vibration Helper (Safe-check for support)
     function vibrate() {
-        if (navigator.vibrate) navigator.vibrate(50);
+        if (typeof navigator.vibrate === 'function') {
+            navigator.vibrate(50);
+        }
     }
 
-    // 3. Start Recording
-    btn.addEventListener('click', async () => {
+    // 2. Main Recording Logic
+    btn.addEventListener('click', () => {
+        vibrate();
+        
         try {
-            // Request mic stream to ensure permission popup on iOS
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            vibrate();
+            // We start recognition directly. 
+            // The browser will automatically handle the permission popup.
             recognition.start();
+            
             btn.disabled = true;
             status.innerText = "Listening...";
-            transcriptDiv.innerText = "";
+            transcriptDiv.innerText = "Listening for voice...";
         } catch (err) {
-            status.innerHTML = '<span class="error-text">Permission Denied</span>';
-            alert("Please enable microphone access in your browser settings.");
+            console.error("Recognition start error:", err);
+            // If already started, don't crash
+            if (err.name === 'InvalidStateError') {
+                status.innerText = "Already listening...";
+            } else {
+                status.innerText = "Mic Error: " + err.message;
+                btn.disabled = false;
+            }
         }
     });
 
-    // 4. Handle Results
+    // 3. Handle Successful Result
     recognition.onresult = (event) => {
         const phrase = event.results[0][0].transcript;
         transcriptDiv.innerText = `"${phrase}"`;
@@ -69,19 +61,31 @@ if (!SpeechRecognition) {
         sendToServer(phrase);
     };
 
+    // 4. Handle End of Speech
     recognition.onend = () => {
         btn.disabled = false;
-        if (!status.innerHTML.includes('Sent')) {
+        // Only reset text if we aren't displaying a success message
+        if (!status.innerHTML.includes('Received')) {
             status.innerText = "Tap to speak again";
         }
     };
 
+    // 5. Handle Errors
     recognition.onerror = (event) => {
         btn.disabled = false;
-        status.innerHTML = `<span class="error-text">Error: ${event.error}</span>`;
+        console.error("Speech Recognition Error:", event.error);
+        
+        if (event.error === 'not-allowed') {
+            status.innerHTML = '<span class="error-text">❌ Mic Access Blocked</span>';
+            alert("Microphone blocked. Please tap the lock icon in your address bar and Allow microphone access.");
+        } else if (event.error === 'no-speech') {
+            status.innerText = "No speech detected. Try again.";
+        } else {
+            status.innerText = "Error: " + event.error;
+        }
     };
 
-    // 5. Server Communication
+    // 6. Server Communication
     async function sendToServer(text) {
         status.innerText = "Sending...";
         try {
@@ -93,33 +97,37 @@ if (!SpeechRecognition) {
             
             if (response.ok) {
                 status.innerHTML = '<span class="success-flash">✓ Received by Server</span>';
+            } else {
+                status.innerText = "Server Error";
             }
         } catch (error) {
+            console.error("Fetch error:", error);
             status.innerHTML = '<span class="error-text">Connection Failed</span>';
         }
     }
 
-    // 6. History UI
+    // 7. Update History UI
     function updateHistoryUI() {
         const recent = [...voiceHistory].reverse().slice(0, 5);
         historyList.innerHTML = recent.join("<br>");
     }
 
-    // 7. Download Logic
+    // 8. Download Functionality
     downloadBtn.addEventListener('click', () => {
-        if (voiceHistory.length === 0) return alert("No history yet.");
+        if (voiceHistory.length === 0) {
+            alert("No history recorded yet.");
+            return;
+        }
         
-        const content = "VOICE LOG\n=========\n" + voiceHistory.join('\n');
+        const content = "VOICE ASSISTANT LOG\n==================\n" + voiceHistory.join('\n');
         const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `voice-log-${new Date().toLocaleDateString()}.txt`;
+        a.download = `voice-history-${new Date().toISOString().slice(0,10)}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
-
-    checkMicPermission();
 }
