@@ -38,7 +38,7 @@ app.post('/receive', (req, res) => {
 
 // 5. Default Route
 // Ensures that visiting the root URL always loads the index.html
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
